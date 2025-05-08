@@ -1,11 +1,16 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-  
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // Inicializar serviço de notificações
   Future<void> initialize() async {
     // Solicitar permissão para notificações
@@ -23,7 +28,8 @@ class NotificationService {
       const DarwinInitializationSettings initializationSettingsIOS =
           DarwinInitializationSettings();
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
       );
@@ -33,11 +39,19 @@ class NotificationService {
       // Configurar handlers para mensagens FCM
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
 
-      // Obter token FCM
+      // Obter token FCM e salvar no Firestore
       String? token = await _fcm.getToken();
-      print('FCM Token: $token'); // TODO: Salvar token no Firestore
+      if (token != null) {
+        await _saveTokenToFirestore(token);
+      }
+
+      // Atualizar token quando for renovado
+      _fcm.onTokenRefresh.listen((newToken) {
+        _saveTokenToFirestore(newToken);
+      });
     }
   }
 
@@ -54,7 +68,8 @@ class NotificationService {
   }
 
   // Handler para mensagens quando o app está fechado
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
     print('Mensagem recebida em background: ${message.messageId}');
   }
 
@@ -96,5 +111,17 @@ class NotificationService {
   // Limpar todas as notificações
   Future<void> clearAllNotifications() async {
     await _localNotifications.cancelAll();
+  }
+
+  // Salvar token FCM no Firestore
+  Future<void> _saveTokenToFirestore(String token) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).update({
+        'fcmToken': token,
+        'lastTokenUpdate': FieldValue.serverTimestamp(),
+      });
+      print('Token FCM atualizado com sucesso');
+    }
   }
 }
