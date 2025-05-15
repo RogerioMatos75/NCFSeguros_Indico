@@ -12,11 +12,11 @@ import '../../services/auth_service.dart';
 import '../../services/notification_service.dart';
 
 // ViewModels
-import '../../presentation/viewmodels/auth_viewmodel.dart';
-import '../../presentation/viewmodels/profile_viewmodel.dart';
-import '../../presentation/viewmodels/indication_form_viewmodel.dart';
-import '../../presentation/viewmodels/indication_list_viewmodel.dart';
-import '../../presentation/viewmodels/admin_dashboard_viewmodel.dart';
+import '../../presentation/viewmodels/auth_view_model.dart';
+import '../../presentation/viewmodels/profile_view_model.dart';
+import '../../presentation/viewmodels/indication_form_view_model.dart';
+import '../../presentation/viewmodels/indication_list_view_model.dart';
+import '../../presentation/viewmodels/admin_dashboard_view_model.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -30,38 +30,32 @@ Future<void> setupInjector() async {
   getIt.registerSingleton<NotificationService>(NotificationService());
 
   // Repositories
-  getIt.registerSingleton<AuthRepository>(
-    AuthRepository(getIt<FirebaseAuth>())
-  );
+  getIt
+      .registerSingleton<AuthRepository>(AuthRepository(getIt<FirebaseAuth>()));
   getIt.registerSingleton<IndicationRepository>(
-    IndicationRepository(getIt<FirebaseFirestore>())
-  );
+      IndicationRepository(getIt<FirebaseFirestore>()));
   getIt.registerSingleton<UserRepository>(
-    UserRepository(getIt<FirebaseFirestore>())
-  );
+      UserRepository(getIt<FirebaseFirestore>()));
 
   // ViewModels
   getIt.registerFactory(() => AuthViewModel(
-    authRepository: getIt<AuthRepository>(),
-    userRepository: getIt<UserRepository>(),
-  ));
+        authService: getIt<AuthService>(),
+        userRepository: getIt<UserRepository>(), // Adicionar esta linha
+      ));
 
   getIt.registerFactory(() => ProfileViewModel(
-    userRepository: getIt<UserRepository>(),
-  ));
+        userRepository: getIt<UserRepository>(),
+      ));
 
   getIt.registerFactory(() => IndicationFormViewModel(
-    indicationRepository: getIt<IndicationRepository>(),
-    userRepository: getIt<UserRepository>(),
-    notificationService: getIt<NotificationService>(),
-  ));
+        indicationRepository: getIt<IndicationRepository>(),
+        userRepository: getIt<UserRepository>(),
+        notificationService: getIt<NotificationService>(),
+      ));
 
   getIt.registerFactory(() => IndicationListViewModel(
-    indicationRepository: getIt<IndicationRepository>(),
-  ));
+      ));
 
   getIt.registerFactory(() => AdminDashboardViewModel(
-    indicationRepository: getIt<IndicationRepository>(),
-    notificationService: getIt<NotificationService>(),
-  ));
+      ));
 }
