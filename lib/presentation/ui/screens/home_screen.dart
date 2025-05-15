@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_routes.dart';
-import '../../../services/auth_service.dart';
+import '../../../services/auth_service.dart'; // Mantido pois authService é usado
+import '../../viewmodels/indication_view_model.dart';
 import '../widgets/custom_button.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<IndicationViewModel>().loadIndications();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authService = GetIt.instance<AuthService>();
-    final user = authService.currentUser;
+    // final authService = GetIt.instance<AuthService>(); // authService não é mais usado diretamente aqui
+    final viewModel = context.watch<IndicationViewModel>();
 
     return Scaffold(
       appBar: AppBar(
@@ -53,14 +68,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
             CustomButton(
               text: 'Nova Indicação',
-              onPressed: () {
-                // TODO: Implementar formulário de nova indicação
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidade em desenvolvimento'),
-                  ),
-                );
-              },
+              onPressed: () => context.push(AppRoutes.newIndication),
               backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
             const SizedBox(height: 24),
@@ -75,30 +83,58 @@ class HomeScreen extends StatelessWidget {
               child: ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 0, // TODO: Implementar lista de indicações
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
+                itemCount: viewModel.isLoading
+                  ? 1
+                  : viewModel.indications.isEmpty
+                      ? 1
+                      : viewModel.indications.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) {
+                if (viewModel.isLoading) {
+                  return const ListTile(
+                    leading: CircularProgressIndicator(),
+                    title: Text('Carregando indicações...'),
+                  );
+                }
+
+                if (viewModel.indications.isEmpty) {
                   return const ListTile(
                     title: Text('Nenhuma indicação encontrada'),
                     subtitle: Text('Faça sua primeira indicação agora!'),
                   );
-                },
+                }
+
+                final indication = viewModel.indications[index];
+                return ListTile(
+                  title: Text(indication.name),
+                  subtitle: Text(
+                    'Status: ${indication.status}\n${indication.email}\n${indication.phone}',
+                  ),
+                  trailing: _getStatusIcon(indication.status),
+                );
+              },
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implementar formulário de nova indicação
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Funcionalidade em desenvolvimento'),
-            ),
-          );
-        },
+        onPressed: () => context.push(AppRoutes.newIndication),
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Widget _getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'pendente':
+        return const Icon(Icons.pending, color: Colors.orange);
+      case 'aprovado':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'rejeitado':
+        return const Icon(Icons.cancel, color: Colors.red);
+      default:
+        return const Icon(Icons.help, color: Colors.grey);
+    }
   }
 }

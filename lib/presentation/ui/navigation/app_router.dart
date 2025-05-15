@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../services/auth_service.dart';
-import 'package:get_it/get_it.dart';
+import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import '../screens/splash_screen.dart';
+import '../screens/new_indication_screen.dart';
+import '../../viewmodels/indication_form_view_model.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
-  redirect: _guardRoute,
+  redirect: (context, state) {
+    final authService = GetIt.instance<AuthService>();
+    final isAuthenticated = authService.currentUser != null;
+    final isOnLoginPage = state.uri.toString() == AppRoutes.login;
+    final isOnSplashPage = state.uri.toString() == AppRoutes.splash;
+
+    // Não redirecionar na splash screen
+    if (isOnSplashPage) return null;
+
+    // Se não estiver autenticado e não estiver na página de login
+    if (!isAuthenticated && !isOnLoginPage) {
+      return AppRoutes.login;
+    }
+
+    // Se estiver autenticado e estiver na página de login
+    if (isAuthenticated && isOnLoginPage) {
+      return AppRoutes.home;
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: AppRoutes.splash,
@@ -21,32 +47,11 @@ final appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: AppRoutes.profile,
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.adminDashboard,
-      builder: (context, state) => const AdminDashboardScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.indicationDetail,
-      builder: (context, state) {
-        final indicationId = state.params['id'] ?? '';
-        return IndicationDetailScreen(indicationId: indicationId);
-      },
+      path: AppRoutes.newIndication,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => GetIt.instance<IndicationFormViewModel>(),
+        child: const NewIndicationScreen(),
+      ),
     ),
   ],
 );
-
-Future<String?> _guardRoute(BuildContext context, GoRouterState state) async {
-  final authService = GetIt.instance<AuthService>();
-  final user = authService.currentUser;
-  final publicRoutes = [AppRoutes.login, AppRoutes.signup];
-
-  if (state.location == AppRoutes.splash) return null;
-  if (user == null && !publicRoutes.contains(state.location))
-    return AppRoutes.login;
-  if (user != null && publicRoutes.contains(state.location))
-    return AppRoutes.home;
-  return null;
-}

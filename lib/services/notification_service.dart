@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -49,28 +49,27 @@ class NotificationService {
       }
 
       // Atualizar token quando for renovado
-      _fcm.onTokenRefresh.listen((newToken) {
-        _saveTokenToFirestore(newToken);
-      });
+      _onTokenRefresh();
     }
   }
 
   // Handler para mensagens em foreground
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
-    print('Mensagem recebida em foreground: ${message.messageId}');
+    debugPrint('Mensagem recebida em foreground: ${message.messageId}');
     await _showLocalNotification(message);
   }
 
   // Handler para mensagens em background
   Future<void> _handleBackgroundMessage(RemoteMessage message) async {
-    print('Aplicativo aberto a partir da notificação: ${message.messageId}');
+    debugPrint(
+        'Aplicativo aberto a partir da notificação: ${message.messageId}');
     // Implementar navegação ou ação específica aqui
   }
 
   // Handler para mensagens quando o app está fechado
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
-    print('Mensagem recebida em background: ${message.messageId}');
+    debugPrint('Mensagem recebida em background: ${message.messageId}');
   }
 
   // Mostrar notificação local
@@ -98,6 +97,46 @@ class NotificationService {
     );
   }
 
+  Future<void> notify(String title, String body,
+      {String? payload, int id = 0}) async {
+    try {
+      const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'default_channel',
+        'Default Channel',
+        channelDescription: 'Default notification channel',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+
+      const platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      await _localNotifications.show(id, title, body, platformChannelSpecifics,
+          payload: payload);
+      debugPrint('Notificação local mostrada: $id');
+    } catch (e) {
+      debugPrint('Erro ao mostrar notificação: $e');
+    }
+  }
+
+  Future<void> showSuccess(String message, {String title = 'Sucesso!'}) async {
+    try {
+      await notify(title, message);
+      debugPrint('Notificação de sucesso: $title - $message');
+    } catch (e) {
+      debugPrint('Erro ao mostrar notificação de sucesso: $e');
+    }
+  }
+
+  Future<void> showError(String message, {String title = 'Erro!'}) async {
+    try {
+      await notify(title, message);
+      debugPrint('Notificação de erro: $title - $message');
+    } catch (e) {
+      debugPrint('Erro ao mostrar notificação de erro: $e');
+    }
+  }
+
   // Enviar notificação para tópico específico
   Future<void> subscribeToTopic(String topic) async {
     await _fcm.subscribeToTopic(topic);
@@ -121,7 +160,16 @@ class NotificationService {
         'fcmToken': token,
         'lastTokenUpdate': FieldValue.serverTimestamp(),
       });
-      print('Token FCM atualizado com sucesso');
+      debugPrint('Token FCM atualizado com sucesso');
     }
+  }
+
+  void _onTokenRefresh() {
+    _fcm.onTokenRefresh.listen((token) {
+      debugPrint('Novo token FCM: $token');
+      if (_auth.currentUser != null) {
+        _saveTokenToFirestore(token);
+      }
+    });
   }
 }
