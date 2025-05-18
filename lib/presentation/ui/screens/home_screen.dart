@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_routes.dart';
-import '../../../services/auth_service.dart'; // Mantido pois authService é usado
-import '../../viewmodels/indication_view_model.dart';
+// Mantido pois authService é usado
+import '../../viewmodels/home_screen_view_model.dart';
 import '../widgets/custom_button.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,14 +18,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<IndicationViewModel>().loadIndications();
+      context.read<HomeScreenViewModel>().loadIndications();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     // final authService = GetIt.instance<AuthService>(); // authService não é mais usado diretamente aqui
-    final viewModel = context.watch<IndicationViewModel>();
+    final viewModel = context.watch<HomeScreenViewModel>();
 
     return Scaffold(
       appBar: AppBar(

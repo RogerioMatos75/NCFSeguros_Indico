@@ -6,6 +6,7 @@ import '../../../presentation/viewmodels/indication_form_view_model.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_routes.dart'; // Adicionado para usar AppRoutes
 
 class NewIndicationScreen extends StatefulWidget {
   const NewIndicationScreen({super.key});
@@ -23,6 +24,15 @@ class _NewIndicationScreenState extends State<NewIndicationScreen> {
   final _authService = GetIt.instance<AuthService>();
 
   @override
+  void initState() {
+    super.initState();
+    // A lógica de redirecionamento baseada na autenticação agora é centralizada no app_router.dart.
+    // _initializeApp(); // Removido para evitar conflitos de navegação.
+  }
+
+  // Future<void> _initializeApp() async { ... } // Método removido
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -36,6 +46,12 @@ class _NewIndicationScreenState extends State<NewIndicationScreen> {
       final viewModel = context.read<IndicationFormViewModel>();
       final currentUser = _authService.currentUser;
       if (currentUser == null) {
+        // Idealmente, o usuário não deveria chegar aqui se não estiver autenticado,
+        // mas é uma boa prática verificar.
+        // Poderia redirecionar para login ou mostrar uma mensagem.
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuário não autenticado.')),
+        );
         return;
       }
 
@@ -48,13 +64,19 @@ class _NewIndicationScreenState extends State<NewIndicationScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Indicação enviada com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.pop();
+        if (viewModel.error == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Indicação enviada com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // Decide se deve fazer pop ou navegar para outra tela após o envio.
+          // context.pop(); // Se esta tela foi empurrada sobre outra.
+          // context.go(AppRoutes.home); // Se deve ir para home após o envio bem-sucedido.
+        } else {
+          // O erro já é tratado no widget build, mas pode adicionar um SnackBar aqui também se desejar.
+        }
       }
     }
   }
@@ -62,6 +84,11 @@ class _NewIndicationScreenState extends State<NewIndicationScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<IndicationFormViewModel>();
+
+    // Durante o _initializeApp, o formulário será exibido.
+    // Você pode querer mostrar uma UI de splash diferente aqui
+    // enquanto `_initializeApp` está em execução, se o formulário não deve ser visível.
+    // Por exemplo, usando um bool `_isLoadingSplash` e mostrando um CircularProgressIndicator.
 
     return Scaffold(
       appBar: AppBar(
