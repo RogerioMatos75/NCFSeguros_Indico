@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import '../../../core/constants/app_routes.dart';
-import '../../../services/auth_service.dart';
-import '../widgets/custom_button.dart';
+import '../../viewmodels/auth_view_model.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,9 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = GetIt.instance<AuthService>();
-  bool _isLoading = false;
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -28,104 +26,113 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      await _authService.signInWithEmailAndPassword(
+  Future<void> _login() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      final authViewModel = context.read<AuthViewModel>();
+      await authViewModel.signIn(
         _emailController.text.trim(),
-        _passwordController.text,
+        _passwordController.text.trim(),
       );
+
       if (mounted) {
-        context.go(AppRoutes.home);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+        if (authViewModel.error == null && authViewModel.isAuthenticated) {
+          context.go(AppRoutes.home);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(authViewModel.error ?? 'Falha no login. Tente novamente.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.watch<AuthViewModel>();
+
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 120,
-                  ),
-                  const SizedBox(height: 48),
-                  CustomTextField(
-                    label: 'E-mail',
-                    hint: 'Digite seu e-mail',
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, digite seu e-mail';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Por favor, digite um e-mail válido';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Senha',
-                    hint: 'Digite sua senha',
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/logo.png', // Certifique-se que este asset existe
+                  height: 150,
+                ),
+                const SizedBox(height: 48.0),
+                CustomTextField(
+                  controller: _emailController,
+                  label: 'E-mail',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira seu e-mail';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Por favor, insira um e-mail válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                CustomTextField(
+                  controller: _passwordController,
+                  label: 'Senha',
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira sua senha';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24.0),
+                if (authViewModel.error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Text(
+                      authViewModel.error!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      textAlign: TextAlign.center,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, digite sua senha';
-                      }
-                      if (value.length < 6) {
-                        return 'A senha deve ter pelo menos 6 caracteres';
-                      }
-                      return null;
-                    },
                   ),
-                  const SizedBox(height: 24),
-                  CustomButton(
-                    text: 'Entrar',
-                    onPressed: _handleLogin,
-                    isLoading: _isLoading,
-                  ),
-                ],
-              ),
+                CustomButton(
+                  text: 'Entrar',
+                  onPressed: authViewModel.isLoading ? null : _login,
+                  isLoading: authViewModel.isLoading,
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navegar para a tela de cadastro se existir
+                    // context.push(AppRoutes.signup);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Funcionalidade de cadastro ainda não implementada.')),
+                    );
+                  },
+                  child: const Text('Não tem uma conta? Cadastre-se'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navegar para a tela de esqueceu a senha se existir
+                    // context.push(AppRoutes.forgotPassword);
+                     ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Funcionalidade de "Esqueci minha senha" ainda não implementada.')),
+                    );
+                  },
+                  child: const Text('Esqueceu sua senha?'),
+                ),
+              ],
             ),
           ),
         ),

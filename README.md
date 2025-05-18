@@ -52,7 +52,9 @@ lib/
 - `flutter run -d chrome`: Executa o projeto no navegador
 - `flutter build web`: Gera build de produção
 - `flutter test`: Executa os testes
-
+- `flutter clean`: Limpa Cache
+- `flutter pub get`: Executa a atualização 
+- ``flutter pub upgrade --major-versions``
 ## Deploy
 
 ### Build de Produção

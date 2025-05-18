@@ -15,7 +15,8 @@ import '../../services/notification_service.dart';
 import '../../presentation/viewmodels/auth_view_model.dart';
 import '../../presentation/viewmodels/profile_view_model.dart';
 import '../../presentation/viewmodels/indication_form_view_model.dart';
-import '../../presentation/viewmodels/indication_list_view_model.dart';
+// import '../../presentation/viewmodels/indication_list_view_model.dart'; // Removido
+import '../../presentation/viewmodels/home_screen_view_model.dart'; // Adicionado
 import '../../presentation/viewmodels/admin_dashboard_view_model.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -53,7 +54,9 @@ Future<void> setupInjector() async {
         notificationService: getIt<NotificationService>(),
       ));
 
-  getIt.registerFactory(() => IndicationListViewModel(
+  getIt.registerFactory(() => HomeScreenViewModel(
+        // authService: getIt<AuthService>(), // HomeScreenViewModel já obtém via GetIt.instance
+        // firestore: getIt<FirebaseFirestore>(), // HomeScreenViewModel já obtém via FirebaseFirestore.instance
       ));
 
   getIt.registerFactory(() => AdminDashboardViewModel(
