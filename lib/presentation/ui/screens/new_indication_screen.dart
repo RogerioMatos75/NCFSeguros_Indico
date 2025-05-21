@@ -5,8 +5,7 @@ import '../../../services/auth_service.dart';
 import '../../../presentation/viewmodels/indication_form_view_model.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_routes.dart'; // Adicionado para usar AppRoutes
+// Adicionado para usar AppRoutes
 
 class NewIndicationScreen extends StatefulWidget {
   const NewIndicationScreen({super.key});

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:get_it/get_it.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../viewmodels/auth_view_model.dart';
 import '../widgets/custom_text_field.dart';
