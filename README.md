@@ -33,6 +33,97 @@ O NCF Seguros Indico é um aplicativo web desenvolvido para facilitar e incentiv
 - **Firebase Auth**: Autenticação de usuários
 - **Firebase Cloud Messaging**: Sistema de notificações push
 
+## 🛠️ Configuração do Ambiente e Primeiros Passos
+
+Para configurar o ambiente de desenvolvimento e rodar o projeto pela primeira vez, siga os passos abaixo.
+
+### 1. Pré-requisitos Essenciais
+
+*   **Flutter SDK:** Certifique-se de ter o Flutter instalado e configurado. Siga as instruções de instalação para o seu sistema operacional no [site oficial do Flutter](https://flutter.dev/docs/get-started/install).
+*   **Dart SDK:** Vem embutido com o Flutter.
+*   **Node.js:** Necessário para a Firebase CLI. Você pode [baixá-lo aqui](https://nodejs.org/).
+*   **Git:** Para controle de versão.
+*   **Um Editor de Código:** VS Code com as extensões do Flutter e Dart, ou Android Studio.
+
+### 2. Obter o Código do Projeto
+   Se você ainda não tem o projeto localmente, clone o repositório. Se já o tem, navegue até o diretório raiz do projeto.
+
+### 3. Instalar Dependências do Flutter
+   No terminal, dentro da pasta do projeto, execute:
+   ```bash
+   flutter pub get
+   ```
+
+### 4. Verificar o Ambiente com `flutter doctor`
+   Execute o comando abaixo e resolva quaisquer problemas pendentes. É crucial que todas as seções estejam com um "check" (✓).
+   ```bash
+   flutter doctor
+   ```
+   *   **Atenção para o Visual Studio (Desenvolvimento Windows):** Se o `flutter doctor` indicar problemas com o Visual Studio (e.g., falta de "Desktop development with C++" ou componentes como MSVC build tools, C++ CMake tools):
+       1.  Abra o "Visual Studio Installer".
+       2.  Clique em "Modificar" na sua instalação do Visual Studio.
+       3.  Garanta que a carga de trabalho "Desenvolvimento para desktop com C++" esteja selecionada.
+       4.  Na aba "Componentes Individuais", verifique e instale os componentes solicitados pelo `flutter doctor`.
+       5.  Após a instalação, reinicie o computador se solicitado e rode `flutter doctor` novamente.
+
+### 5. Configurar o Firebase com FlutterFire CLI
+
+Este projeto utiliza o Firebase. A configuração é simplificada pela FlutterFire CLI.
+
+   a. **Instale a Firebase CLI globalmente** (se ainda não tiver):
+      ```bash
+      npm install -g firebase-tools
+      ```
+
+   b. **Faça login no Firebase pela CLI**:
+      ```bash
+      firebase login
+      ```
+      (Autentique-se com a conta Google associada ao seu projeto Firebase)
+
+   c. **Instale a FlutterFire CLI globalmente**:
+      ```bash
+      dart pub global activate flutterfire_cli
+      ```
+      *   **⚠️ Atenção ao PATH:** Após a instalação, o terminal pode avisar que o diretório de executáveis do Pub não está no seu PATH (e.g., `C:\Users\SEU_USUARIO\AppData\Local\Pub\Cache\bin`). Você **precisa** adicionar este diretório à variável de ambiente "Path" do seu sistema para que o comando `flutterfire` seja reconhecido. Após adicionar, **reinicie seu terminal/VS Code**.
+
+   d. **Configure o Firebase no Projeto Flutter** (o comando `flutterfire configure` já está listado em "Comandos Úteis"):
+      Navegue até a pasta raiz do projeto `NCFSeguros_Indico` e execute `flutterfire configure`. Siga as instruções interativas para selecionar/criar seu projeto Firebase e as plataformas desejadas (android, ios, web, etc.).
+      Isso irá gerar automaticamente o arquivo `lib/firebase_options.dart`.
+
+   e. **Garanta o `firebase_core` e Inicialize o Firebase no `main.dart`**:
+      Certifique-se de que o pacote `firebase_core` está no seu `pubspec.yaml`. Se não estiver, adicione-o e rode `flutter pub get`.
+      ```yaml
+      # pubspec.yaml
+      dependencies:
+        flutter:
+          sdk: flutter
+        firebase_core: ^MAIS_RECENTE # Verifique a versão mais recente no pub.dev
+        # ... firebase_auth, cloud_firestore, etc.
+      ```
+      No seu arquivo `lib/main.dart`, garanta que o Firebase seja inicializado:
+      ```dart
+      // lib/main.dart
+      import 'package:flutter/material.dart';
+      import 'package:firebase_core/firebase_core.dart';
+      import 'firebase_options.dart'; // Arquivo gerado pelo flutterfire configure
+
+      void main() async {
+        WidgetsFlutterBinding.ensureInitialized();
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        runApp(MyApp()); // Seu widget principal do app
+      }
+      ```
+
+   f. **Importante sobre `lib/firebase_options.dart`**:
+      *   Este arquivo, gerado pelo `flutterfire configure`, **DEVE ser versionado** (comitado no Git). Ele contém as chaves de configuração do cliente necessárias para seu app se conectar ao Firebase e não são consideradas segredos críticos que precisariam ser omitidos do controle de versão.
+      *   A segurança dos seus dados no Firebase é gerenciada pelas **Regras de Segurança (Security Rules)** e **App Check** no console do Firebase.
+
+### 6. Executar o Projeto
+   Após a configuração, você pode executar o projeto utilizando os comandos listados na seção "Comandos Úteis" (e.g., `flutter run -d chrome`).
+
 ## Estrutura do Projeto
 
 ```text
@@ -50,12 +141,25 @@ lib/
 ## Comandos Úteis
 
 - `flutter run -d chrome`: Executa o projeto no navegador
-- `flutter build web`: Gera build de produção
-- `flutter test`: Executa os testes
-- `flutter clean`: Limpa Cache
-- `flutter pub get`: Executa a atualização 
-- ``flutter pub upgrade --major-versions``
-## Deploy
+- `flutter build web`: Gera build de produção para o navegador  
+- `flutter test --coverage`: Executa os testes
+- `flutterfire configure`: Configura o Firebase para o projeto
+- `flutter clean`: Limpa Caches
+- `flutter pub get`: Executa a atualização de pacotes
+- `flutter pub upgrade --major-versions`: Atualiza pacotes para versões principais
+- `flutter pub outdated`: Lista pacotes desatualizados
+- `flutter doctor`: Verifica o ambiente de desenvolvimento
+- `flutter doctor -v`: Verifica o ambiente de desenvolvimento com suas versões
+- `flutter doctor --android-licenses`: Aceita as licenças do Android SDK:
+- `flutter pub run build_runner build --delete-conflicting-outputs`: Executa o código gerado para os modelos
+- `flutter pub run build_runner watch --delete-conflicting-outputs`: Executa o código gerado para os modelos em watch mode
+- `flutter pub run build_runner clean`: Limpa os arquivos gerados pelo build_runner
+- `flutter pub run flutter_launcher_icons:main`: Gera os ícones do aplicativo para Android e iOS
+- `flutter pub run flutter_native_splash:create`: Gera a splash screen do aplicativo
+- `flutter pub run flutter_native_splash:remove`: Remove a splash screen do aplicativo
+- `flutter pub run flutter_native_splash:clean`: Limpa os arquivos gerados pela splash screen
+
+# Deploy
 
 ### Build de Produção
 

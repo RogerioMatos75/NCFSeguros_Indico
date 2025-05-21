@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'package:provider/provider.dart'; // Adicionar import do Provider
 import 'package:get_it/get_it.dart'; // Adicionar import do GetIt
 import 'core/di/injector.dart';
@@ -9,7 +10,9 @@ import 'presentation/viewmodels/home_screen_view_model.dart'; // Importar HomeSc
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await setupInjector(); // Inicializa injeção de dependência
 
   runApp(const MyApp());
