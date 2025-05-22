@@ -1,1 +1,1 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"ncf-seguros-flutter","configurations":{"macos":"1:687603813143:ios:5717ab8ed4438e4bed0552"}}}}}}
+{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"ncfseguros-indico","configurations":{"android":"1:833814800474:android:aca9ab0bf9d67a0da65063","ios":"1:833814800474:ios:cf0d7aa2fd0efd76a65063","macos":"1:833814800474:ios:cf0d7aa2fd0efd76a65063","web":"1:833814800474:web:73cebd3e67209cf9a65063","windows":"1:833814800474:web:953a9812338a9c3aa65063"}}}}}}
