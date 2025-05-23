@@ -79,10 +79,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   label: 'E-mail',
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Por favor, insira seu e-mail';
-                    if (!value.contains('@'))
+                    }
+                    if (!value.contains('@')) {
                       return 'Por favor, insira um e-mail válido';
+                    }
                     return null;
                   },
                 ),
@@ -92,10 +94,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   label: 'Senha',
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Por favor, insira sua senha';
-                    if (value.length < 6)
+                    }
+                    if (value.length < 6) {
                       return 'A senha deve ter pelo menos 6 caracteres';
+                    }
                     return null;
                   },
                 ),
@@ -105,10 +109,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   label: 'Confirmar Senha',
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Por favor, confirme sua senha';
-                    if (value != _passwordController.text)
+                    }
+                    if (value != _passwordController.text) {
                       return 'As senhas não coincidem';
+                    }
                     return null;
                   },
                 ),
