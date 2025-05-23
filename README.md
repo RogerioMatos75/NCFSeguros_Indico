@@ -148,7 +148,6 @@ lib/
 - `flutter run -d chrome`: Executa o projeto no navegador
 - `flutter build web`: Gera build de produção para o navegador  
 - `flutter test --coverage`: Executa os testes
-- `flutterfire configure`: Configura o Firebase para o projeto
 - `flutter clean`: Limpa Caches
 - `flutter pub get`: Executa a atualização de pacotes
 - `flutter pub upgrade --major-versions`: Atualiza pacotes para versões principais
