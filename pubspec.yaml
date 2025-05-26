@@ -30,6 +30,8 @@ dependencies:
   # UI
   google_fonts: ^6.1.0
   flutter_svg: ^2.0.9
+  google_sign_in: ^6.3.0
+  flutter_facebook_auth: ^6.0.4
 
 dev_dependencies:
   flutter_test:
@@ -43,3 +45,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/Logo_NCF.png

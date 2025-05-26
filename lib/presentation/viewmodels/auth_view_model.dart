@@ -20,10 +20,14 @@ class AuthViewModel extends BaseViewModel {
 
   Stream<User?> get authStateChanges => _authService.authStateChanges;
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn(String email, String password,
+      {bool rememberMe = false}) async {
     await handleAsyncOperation(() async {
-      // Chamada com argumentos posicionais, conforme indicado pelos erros
-      _currentUser = await _authService.signInWithEmailAndPassword(email, password);
+      _currentUser =
+          await _authService.signInWithEmailAndPassword(email, password);
+      if (rememberMe) {
+        // TODO: Implementar persistência local do login
+      }
       notifyListeners();
     });
   }
@@ -80,6 +84,20 @@ class AuthViewModel extends BaseViewModel {
         // await _authService.updateFirebaseDisplayName(name);
         notifyListeners();
       }
+    });
+  }
+
+  Future<void> signInWithGoogle() async {
+    await handleAsyncOperation(() async {
+      _currentUser = await _authService.signInWithGoogle();
+      notifyListeners();
+    });
+  }
+
+  Future<void> signInWithFacebook() async {
+    await handleAsyncOperation(() async {
+      _currentUser = await _authService.signInWithFacebook();
+      notifyListeners();
     });
   }
 }
