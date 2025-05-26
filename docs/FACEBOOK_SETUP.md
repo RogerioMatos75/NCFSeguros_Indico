@@ -11,6 +11,7 @@ Para configurar o login com Facebook no aplicativo NCF Seguros Indico, siga este
    - Adicione a chave de hash de desenvolvimento e produção
 
 3. No arquivo `android/app/src/main/AndroidManifest.xml`, adicione dentro da tag `<application>`:
+
 ```xml
 <meta-data
     android:name="com.facebook.sdk.ApplicationId"
@@ -35,7 +36,8 @@ Para configurar o login com Facebook no aplicativo NCF Seguros Indico, siga este
 </activity>
 ```
 
-4. Crie/atualize o arquivo `android/app/src/main/res/values/strings.xml`:
+1. Crie/atualize o arquivo `android/app/src/main/res/values/strings.xml`:
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -46,12 +48,14 @@ Para configurar o login com Facebook no aplicativo NCF Seguros Indico, siga este
 </resources>
 ```
 
-5. Adicione as permissões necessárias no `android/app/src/main/AndroidManifest.xml`:
+1. Adicione as permissões necessárias no `android/app/src/main/AndroidManifest.xml`:
+
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-6. No `android/app/build.gradle`, certifique-se de que a versão mínima do SDK é 21:
+1. No `android/app/build.gradle`, certifique-se de que a versão mínima do SDK é 21:
+
 ```gradle
 defaultConfig {
     minSdkVersion 21
@@ -62,8 +66,11 @@ defaultConfig {
 
 1. Substitua `[SEU_APP_ID_AQUI]` pelo ID do seu aplicativo Facebook
 2. Substitua `[SEU_CLIENT_TOKEN_AQUI]` pelo token do cliente gerado no painel do Facebook
+
 3. Para gerar a chave de hash de desenvolvimento:
+
 ```bash
 keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore | openssl sha1 -binary | openssl base64
 ```
-4. A senha padrão do debug.keystore é: `android`
+
+1. A senha padrão do debug.keystore é: `android`

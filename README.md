@@ -8,7 +8,7 @@ O NCF Seguros Indico é um aplicativo web desenvolvido para facilitar e incentiv
 
 ### Para Segurados
 
-- **Cadastro e Login**: 
+- **Cadastro e Login**:
   - Autenticação segura com Firebase Auth
   - Login com email e senha
   - Login com Google
