@@ -8,7 +8,13 @@ O NCF Seguros Indico é um aplicativo web desenvolvido para facilitar e incentiv
 
 ### Para Segurados
 
-- **Cadastro e Login**: Autenticação segura com Firebase Auth
+- **Cadastro e Login**: 
+  - Autenticação segura com Firebase Auth
+  - Login com email e senha
+  - Login com Google
+  - Login com Facebook
+  - Recuperação de senha
+  - "Lembrar-me" para manter sessão ativa
 - **Perfil de Usuário**: Gerenciamento de informações pessoais
 - **Indicação de Amigos**: Formulário simples para indicar potenciais clientes
 - **Acompanhamento de Indicações**: Visualização do status de todas as indicações feitas
@@ -31,6 +37,9 @@ O NCF Seguros Indico é um aplicativo web desenvolvido para facilitar e incentiv
 ## Tecnologias Utilizadas
 
 - **Firebase Auth**: Autenticação de usuários
+  - Login com Email/Senha
+  - Login com Google
+  - Login com Facebook
 - **Firebase Cloud Messaging**: Sistema de notificações push
 
 ## 🛠️ Configuração do Ambiente e Primeiros Passos
@@ -117,10 +126,10 @@ Este projeto utiliza o Firebase. A configuração é simplificada pela FlutterFi
 
    f. **Importante sobre `lib/firebase_options.dart`**:
       Este arquivo é gerado pelo `flutterfire configure` e contém as chaves de configuração do cliente para o Firebase.
-      *   **Recomendação de Segurança:** Para evitar a exposição acidental de chaves de API, é **altamente recomendado adicionar `lib/firebase_options.dart` ao seu arquivo `.gitignore`**.
-      *   Cada desenvolvedor (e seu ambiente de CI/CD) deve executar `flutterfire configure` localmente para gerar este arquivo com as chaves apropriadas para o ambiente Firebase que estão utilizando.
-      *   A segurança dos seus dados no Firebase é primariamente gerenciada pelas **Regras de Segurança (Security Rules)** e **App Check** configurados no console do Firebase. No entanto, não versionar as chaves adiciona uma camada extra de proteção.
-      *   Se você optar por versionar este arquivo, certifique-se de que seu repositório é privado e que você compreende os riscos associados.
+      **Recomendação de Segurança:** Para evitar a exposição acidental de chaves de API, é **altamente recomendado adicionar `lib/firebase_options.dart` ao seu arquivo `.gitignore`**.
+      Cada desenvolvedor (e seu ambiente de CI/CD) deve executar `flutterfire configure` localmente para gerar este arquivo com as chaves apropriadas para o ambiente Firebase que estão utilizando.
+      A segurança dos seus dados no Firebase é primariamente gerenciada pelas **Regras de Segurança (Security Rules)** e **App Check** configurados no console do Firebase. No entanto, não versionar as chaves adiciona uma camada extra de proteção.
+      Se você optar por versionar este arquivo, certifique-se de que seu repositório é privado e que você compreende os riscos associados.
 
 ### 6. Executar o Projeto
 
