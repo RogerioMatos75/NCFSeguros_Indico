@@ -81,7 +81,7 @@
     },
     {
       "name": "built_value",
-      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/built_value-8.9.5",
+      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/built_value-8.10.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -267,9 +267,9 @@
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0",
+      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-6.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.5"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_local_notifications",
@@ -447,9 +447,15 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1",
+      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/lints-6.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.6"
+      "languageVersion": "3.8"
+    },
+    {
+      "name": "logger",
+      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/logger-2.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "logging",
@@ -777,9 +783,9 @@
     },
     {
       "name": "vector_graphics_compiler",
-      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/vector_graphics_compiler-1.1.16",
+      "rootUri": "file:///C:/Users/roger/AppData/Local/Pub/Cache/hosted/pub.dev/vector_graphics_compiler-1.1.17",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.6"
     },
     {
       "name": "vector_math",

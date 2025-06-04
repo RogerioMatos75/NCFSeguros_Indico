@@ -4,288 +4,43 @@
   <base href="$FLUTTER_BASE_HREF">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Aplicativo de indicações para NCF Seguros">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="description" content="NCF Seguros Indico">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="NCF Seguros Indico">
+  <meta name="apple-mobile-web-app-title" content="ncf_seguros_indico">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
-
+  <link rel="icon" type="image/png" href="favicon.png"/>
   <title>NCF Seguros Indico</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
-  <script src="firebase-config.js"></script>
+  <!-- Facebook SDK -->
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+  <!-- Firebase Core -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 
   <script>
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(() => console.log('ServiceWorker registration successful'))
-          .catch(err => console.error('ServiceWorker registration failed:', err));
-      });
-    }
+    window.flutterWebRenderer = "html";
+    var serviceWorkerVersion = null;
   </script>
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background-color: #ffffff;
-    }
-
-    #splash-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease-out;
-    }
-
-    #splash-screen.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #splash-screen img {
-      max-width: 200px;
-    }
-
-    .auth-container, .dashboard-container {
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    .auth-container input, .auth-container button {
-      display: block;
-      width: calc(100% - 22px);
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    .auth-container button {
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .auth-container button:hover {
-      background-color: #0052a3;
-    }
-
-    .dashboard-container button {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-
-    .dashboard-container button:hover {
-      background-color: #c82333;
-    }
-  </style>
+  <script src="flutter.js" defer></script>
 </head>
 <body>
-  <div id="splash-screen">
-    <img src="assets/images/Logo_NCF.png" alt="NCF Seguros Indico" />
-  </div>
-
-  <div id="app-content" style="display: none;">
-    <div id="login-view" class="auth-container" style="display: none;">
-      <h2>Login NCF Seguros</h2>
-      <input type="email" id="login-email" placeholder="Email" required>
-      <input type="password" id="login-password" placeholder="Senha" required>
-      <button id="login-button">Entrar</button>
-      <p id="login-error" style="color: red; text-align: center;"></p>
-      <p style="text-align: center;">Não tem conta? <a href="#" id="go-to-signup">Crie uma</a></p>
-    </div>
-
-    <div id="signup-view" class="auth-container" style="display: none;">
-      <h2>Criar Conta</h2>
-      <input type="email" id="signup-email" placeholder="Email" required>
-      <input type="password" id="signup-password" placeholder="Senha (mínimo 6 caracteres)" required>
-      <button id="signup-button">Criar Conta</button>
-      <p id="signup-error" style="color: red; text-align: center;"></p>
-      <p style="text-align: center;">Já tem conta? <a href="#" id="go-to-login">Faça Login</a></p>
-    </div>
-
-    <div id="user-dashboard-view" class="dashboard-container" style="display: none;">
-      <h2>Painel do Indicador</h2>
-      <p>Bem-vindo, <span id="user-email-display"></span>!</p>
-      <p>Aqui você poderá fazer suas indicações.</p>
-      <button id="logout-button">Sair</button>
-    </div>
-
-    <div id="admin-dashboard-view" class="dashboard-container" style="display: none;">
-      <h2>Painel Administrativo</h2>
-      <p>Bem-vindo, Administrador <span id="admin-email-display"></span>!</p>
-      <p>Aqui você poderá gerenciar as indicações.</p>
-      <button id="admin-logout-button">Sair</button>
-    </div>
-  </div>
-
   <script>
-    // Aguardar carregamento do DOM
-    document.addEventListener('DOMContentLoaded', () => {
-
-      // Referências aos elementos da UI
-    const splashScreen = document.getElementById('splash-screen');
-    const appContent = document.getElementById('app-content');
-    const loginView = document.getElementById('login-view');
-    const signupView = document.getElementById('signup-view');
-    const userDashboardView = document.getElementById('user-dashboard-view');
-    const adminDashboardView = document.getElementById('admin-dashboard-view');
-
-    const loginEmailInput = document.getElementById('login-email');
-    const loginPasswordInput = document.getElementById('login-password');
-    const loginButton = document.getElementById('login-button');
-    const loginError = document.getElementById('login-error');
-
-    const signupEmailInput = document.getElementById('signup-email');
-    const signupPasswordInput = document.getElementById('signup-password');
-    const signupButton = document.getElementById('signup-button');
-    const signupError = document.getElementById('signup-error');
-
-    const goToSignupLink = document.getElementById('go-to-signup');
-    const goToLoginLink = document.getElementById('go-to-login');
-
-    const logoutButton = document.getElementById('logout-button');
-    const adminLogoutButton = document.getElementById('admin-logout-button');
-    const userEmailDisplay = document.getElementById('user-email-display');
-    const adminEmailDisplay = document.getElementById('admin-email-display');
-
-    // Configuração
-    const ADMIN_EMAIL = "admin@ncfseguros.com";
-
-    // Funções auxiliares
-    function showView(viewToShow) {
-      loginView.style.display = 'none';
-      signupView.style.display = 'none';
-      userDashboardView.style.display = 'none';
-      adminDashboardView.style.display = 'none';
-      if (viewToShow) {
-        viewToShow.style.display = 'block';
-      }
-    }
-
-    function hideSplashScreen() {
-      if (!splashScreen || !appContent) return;
-      splashScreen.classList.add('hidden');
-      setTimeout(() => {
-        splashScreen.style.display = 'none';
-        appContent.style.display = 'block';
-      }, 500); // Corresponde à duração da transição CSS
-    }
-
-    // Event Listeners para autenticação
-    loginButton.addEventListener('click', async () => {
-      try {
-        const email = loginEmailInput.value;
-        const password = loginPasswordInput.value;
-        loginError.textContent = '';
-
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        
-        if (user.email === ADMIN_EMAIL) {
-          adminEmailDisplay.textContent = user.email;
-          showView(adminDashboardView);
-        } else {
-          userEmailDisplay.textContent = user.email;
-          showView(userDashboardView);
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
         }
-      } catch (error) {
-        console.error('Erro de login:', error);
-        loginError.textContent = 'Erro no login: ' + error.message;
-      }
+      });
     });
-
-    signupButton.addEventListener('click', async () => {
-      try {
-        const email = signupEmailInput.value;
-        const password = signupPasswordInput.value;
-        signupError.textContent = '';
-
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        userEmailDisplay.textContent = user.email;
-        showView(userDashboardView);
-      } catch (error) {
-        console.error('Erro de cadastro:', error);
-        signupError.textContent = 'Erro no cadastro: ' + error.message;
-      }
-    });
-
-    goToSignupLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView(signupView);
-    });
-
-    goToLoginLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView(loginView);
-    });
-
-    // Função de logout compartilhada
-    const handleLogout = async () => {
-      try {
-        await firebase.auth().signOut();
-        showView(loginView);
-      } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-      }
-    };
-
-    // Adiciona evento de logout aos botões
-    [logoutButton, adminLogoutButton].forEach(button => {
-      button.addEventListener('click', handleLogout);
-    });
-
-    // Verificar estado de autenticação inicial
-    firebase.auth().onAuthStateChanged((user) => {
-      hideSplashScreen();
-      if (user) {
-        if (user.email === ADMIN_EMAIL) {
-          adminEmailDisplay.textContent = user.email;
-          showView(adminDashboardView);
-        } else {
-          userEmailDisplay.textContent = user.email;
-          showView(userDashboardView);
-        }
-      } else {
-        showView(loginView);
-      }
-    });
-  });
   </script>
-
-  <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>

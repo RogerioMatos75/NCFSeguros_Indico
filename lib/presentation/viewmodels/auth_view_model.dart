@@ -79,9 +79,8 @@ class AuthViewModel extends BaseViewModel {
         // Recarregar o UserModel atualizado
         _currentUser = await _userRepository.getUserById(_currentUser!.id);
 
-        // TODO: Se 'name' também deve atualizar o displayName do Firebase Auth,
-        // adicione uma chamada ao AuthService para isso. Ex:
-        // await _authService.updateFirebaseDisplayName(name);
+        // Atualiza o displayName no Firebase Auth se o nome foi alterado
+        await _authService.updateFirebaseUserDisplayName(name);
         notifyListeners();
       }
     });

@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../services/auth_service.dart';
 import '../screens/home_screen.dart';
-import '../screens/login_screen.dart'; // Adicionar import da LoginScreen
+import '../screens/auth/new_modern_login_screen.dart'; // Adicionar import da LoginScreen 
 import '../screens/splash/splash_screen.dart';
 import '../screens/new_indication_screen.dart';
 import '../../viewmodels/indication_form_view_model.dart';
@@ -47,7 +47,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.login, // Adicionar rota para LoginScreen
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const NewModernLoginScreen(),
     ),
     GoRoute(
       path: AppRoutes.newIndication,

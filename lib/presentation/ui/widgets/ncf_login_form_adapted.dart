@@ -41,7 +41,7 @@ class NcfLoginFormAdapted extends StatelessWidget {
     final labelStyle = GoogleFonts.inter(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: textTheme.bodyMedium?.color?.withOpacity(0.7),
+      color: textTheme.bodyMedium?.color?.withAlpha((0.7 * 255).round()),
     );
 
     return Center(
@@ -94,7 +94,7 @@ class NcfLoginFormAdapted extends StatelessWidget {
                     obscurePassword
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: theme.iconTheme.color?.withOpacity(0.7),
+                    color: theme.iconTheme.color?.withAlpha((0.7 * 255).round()),
                     size: 20,
                   ),
                   onPressed: togglePassword,

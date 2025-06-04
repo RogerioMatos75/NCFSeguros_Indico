@@ -15,8 +15,7 @@ import '../../services/notification_service.dart';
 import '../../presentation/viewmodels/auth_view_model.dart';
 import '../../presentation/viewmodels/profile_view_model.dart';
 import '../../presentation/viewmodels/indication_form_view_model.dart';
-// import '../../presentation/viewmodels/indication_list_view_model.dart'; // Removido
-import '../../presentation/viewmodels/home_screen_view_model.dart'; // Adicionado
+import '../../presentation/viewmodels/home_screen_view_model.dart';
 import '../../presentation/viewmodels/admin_dashboard_view_model.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -31,17 +30,20 @@ Future<void> setupInjector() async {
   getIt.registerSingleton<NotificationService>(NotificationService());
 
   // Repositories
-  getIt
-      .registerSingleton<AuthRepository>(AuthRepository(getIt<FirebaseAuth>()));
+  getIt.registerSingleton<AuthRepository>(
+    AuthRepository(getIt<FirebaseAuth>()),
+  );
   getIt.registerSingleton<IndicationRepository>(
-      IndicationRepository(getIt<FirebaseFirestore>()));
+    IndicationRepository(getIt<FirebaseFirestore>()),
+  );
   getIt.registerSingleton<UserRepository>(
-      UserRepository(getIt<FirebaseFirestore>()));
+    UserRepository(getIt<FirebaseFirestore>()),
+  );
 
   // ViewModels
   getIt.registerFactory(() => AuthViewModel(
         authService: getIt<AuthService>(),
-        userRepository: getIt<UserRepository>(), // Adicionar esta linha
+        userRepository: getIt<UserRepository>(),
       ));
 
   getIt.registerFactory(() => ProfileViewModel(
