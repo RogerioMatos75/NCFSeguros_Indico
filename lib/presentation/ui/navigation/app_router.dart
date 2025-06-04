@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
+import '../../../core/di/injector.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../services/auth_service.dart';
 import '../screens/home_screen.dart';
-import '../screens/auth/new_modern_login_screen.dart'; // Adicionar import da LoginScreen 
+import '../screens/auth/new_modern_login_screen.dart'; // Adicionar import da LoginScreen
 import '../screens/splash/splash_screen.dart';
 import '../screens/new_indication_screen.dart';
 import '../../viewmodels/indication_form_view_model.dart';
@@ -13,7 +13,7 @@ import '../../viewmodels/indication_form_view_model.dart';
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash, // Modificado para a splash screen original
   redirect: (context, state) {
-    final authService = GetIt.instance<AuthService>();
+    final authService = getIt<AuthService>();
     final isAuthenticated = authService.currentUser != null;
     // Usar state.uri.path para comparar caminhos de rota de forma mais robusta,
     // pois state.uri.toString() pode incluir query parameters.
@@ -52,7 +52,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.newIndication,
       builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => GetIt.instance<IndicationFormViewModel>(),
+        create: (_) => getIt<IndicationFormViewModel>(),
         child: const NewIndicationScreen(),
       ),
     ),

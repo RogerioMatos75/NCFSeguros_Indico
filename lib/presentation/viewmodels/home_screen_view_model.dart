@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../domain/models/indication.dart';
-import 'package:get_it/get_it.dart';
+import '../../../core/di/injector.dart';
 import '../../services/auth_service.dart';
 
 class HomeScreenViewModel extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AuthService _authService = GetIt.instance<AuthService>();
+  final AuthService _authService = getIt<AuthService>();
 
   List<Indication> _indications = [];
   bool _isLoading = false;
@@ -34,9 +34,8 @@ class HomeScreenViewModel extends ChangeNotifier {
           .orderBy('createdAt', descending: true)
           .get();
 
-      _indications = snapshot.docs
-          .map((doc) => Indication.fromFirestore(doc))
-          .toList();
+      _indications =
+          snapshot.docs.map((doc) => Indication.fromFirestore(doc)).toList();
     } catch (e) {
       _error = 'Erro ao carregar indicações: $e';
     } finally {
@@ -68,9 +67,7 @@ class HomeScreenViewModel extends ChangeNotifier {
         notes: notes,
       );
 
-      await _firestore
-          .collection('indications')
-          .add(indication.toMap());
+      await _firestore.collection('indications').add(indication.toMap());
 
       await loadIndications(); // Recarrega a lista
     } catch (e) {

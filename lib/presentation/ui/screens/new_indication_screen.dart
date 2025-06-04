@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
+import '../../../core/di/injector.dart';
 import '../../../services/auth_service.dart';
 import '../../../presentation/viewmodels/indication_form_view_model.dart';
 import '../widgets/custom_text_field.dart';
@@ -20,7 +20,7 @@ class _NewIndicationScreenState extends State<NewIndicationScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _notesController = TextEditingController();
-  final _authService = GetIt.instance<AuthService>();
+  final _authService = getIt<AuthService>();
 
   @override
   void initState() {

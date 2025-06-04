@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final authService = GetIt.instance<AuthService>(); // authService não é mais usado diretamente aqui
+    // final authService = getIt<AuthService>(); // authService não é mais usado diretamente aqui
     final viewModel = context.watch<HomeScreenViewModel>();
 
     return Scaffold(
@@ -50,10 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Bem-vindo(a)!',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -83,35 +84,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: viewModel.isLoading
-                  ? 1
-                  : viewModel.indications.isEmpty
-                      ? 1
-                      : viewModel.indications.length,
-              separatorBuilder: (context, index) => const Divider(),
-              itemBuilder: (context, index) {
-                if (viewModel.isLoading) {
-                  return const ListTile(
-                    leading: CircularProgressIndicator(),
-                    title: Text('Carregando indicações...'),
-                  );
-                }
+                    ? 1
+                    : viewModel.indications.isEmpty
+                        ? 1
+                        : viewModel.indications.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  if (viewModel.isLoading) {
+                    return const ListTile(
+                      leading: CircularProgressIndicator(),
+                      title: Text('Carregando indicações...'),
+                    );
+                  }
 
-                if (viewModel.indications.isEmpty) {
-                  return const ListTile(
-                    title: Text('Nenhuma indicação encontrada'),
-                    subtitle: Text('Faça sua primeira indicação agora!'),
-                  );
-                }
+                  if (viewModel.indications.isEmpty) {
+                    return const ListTile(
+                      title: Text('Nenhuma indicação encontrada'),
+                      subtitle: Text('Faça sua primeira indicação agora!'),
+                    );
+                  }
 
-                final indication = viewModel.indications[index];
-                return ListTile(
-                  title: Text(indication.name),
-                  subtitle: Text(
-                    'Status: ${indication.status}\n${indication.email}\n${indication.phone}',
-                  ),
-                  trailing: _getStatusIcon(indication.status),
-                );
-              },
+                  final indication = viewModel.indications[index];
+                  return ListTile(
+                    title: Text(indication.name),
+                    subtitle: Text(
+                      'Status: ${indication.status}\n${indication.email}\n${indication.phone}',
+                    ),
+                    trailing: _getStatusIcon(indication.status),
+                  );
+                },
               ),
             ),
           ],

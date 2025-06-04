@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart'; // Adicionar import do Provider
-import 'package:get_it/get_it.dart'; // Adicionar import do GetIt
 import 'core/di/injector.dart';
 import 'presentation/ui/navigation/app_router.dart';
 import 'presentation/viewmodels/auth_view_model.dart'; // Importar AuthViewModel
@@ -26,10 +25,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => GetIt.instance<AuthViewModel>(),
+          create: (_) => getIt<AuthViewModel>(),
         ),
         ChangeNotifierProvider(
-          create: (_) => GetIt.instance<HomeScreenViewModel>(),
+          create: (_) => getIt<HomeScreenViewModel>(),
         ),
         // Adicione outros providers globais aqui se necessário
       ],

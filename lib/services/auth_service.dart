@@ -4,7 +4,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:logger/logger.dart'; // Adicionado import do logger
 import '../data/repositories/user_repository.dart';
 import '../data/models/user_model.dart';
-import 'package:get_it/get_it.dart';
+import '../core/di/injector.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
@@ -13,7 +13,7 @@ class AuthService {
   final Logger _logger = Logger(); // Instância do Logger
 
   AuthService(this._auth) {
-    _userRepository = GetIt.instance<UserRepository>();
+    _userRepository = getIt<UserRepository>();
   }
 
   // Stream do estado de autenticação
@@ -39,15 +39,18 @@ class AuthService {
         final userModel =
             await _userRepository.getUserById(userCredential.user!.uid);
         if (userModel == null) {
-          _logger.w('Usuário ${userCredential.user!.uid} autenticado mas não encontrado no banco de dados.');
+          _logger.w(
+              'Usuário ${userCredential.user!.uid} autenticado mas não encontrado no banco de dados.');
           throw 'Usuário não encontrado no banco de dados';
         }
         return userModel;
       }
-      _logger.w('Login falhou: userCredential.user é nulo após signInWithEmailAndPassword.');
+      _logger.w(
+          'Login falhou: userCredential.user é nulo após signInWithEmailAndPassword.');
       throw 'Erro ao fazer login';
     } catch (e, stackTrace) {
-      _logger.e('Erro em signInWithEmailAndPassword', error: e, stackTrace: stackTrace);
+      _logger.e('Erro em signInWithEmailAndPassword',
+          error: e, stackTrace: stackTrace);
       throw _handleAuthError(e);
     }
   }
@@ -83,10 +86,12 @@ class AuthService {
         await _userRepository.createUser(newUser);
         return newUser;
       }
-      _logger.w('Registro falhou: userCredential.user é nulo após createUserWithEmailAndPassword.');
+      _logger.w(
+          'Registro falhou: userCredential.user é nulo após createUserWithEmailAndPassword.');
       throw 'Erro ao criar usuário';
     } catch (e, stackTrace) {
-      _logger.e('Erro em registerWithEmailAndPassword', error: e, stackTrace: stackTrace);
+      _logger.e('Erro em registerWithEmailAndPassword',
+          error: e, stackTrace: stackTrace);
       throw _handleAuthError(e);
     }
   }
@@ -96,7 +101,8 @@ class AuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e, stackTrace) {
-      _logger.e('Erro em sendPasswordResetEmail', error: e, stackTrace: stackTrace);
+      _logger.e('Erro em sendPasswordResetEmail',
+          error: e, stackTrace: stackTrace);
       throw _handleAuthError(e);
     }
   }
@@ -108,12 +114,19 @@ class AuthService {
       await FacebookAuth.instance.logOut();
       await _auth.signOut();
     } catch (e, stackTrace) {
-      _logger.w('Erro durante o signOut de um provedor social. Tentando Firebase signOut.', error: e, stackTrace: stackTrace);
+      _logger.w(
+          'Erro durante o signOut de um provedor social. Tentando Firebase signOut.',
+          error: e,
+          stackTrace: stackTrace);
       try {
         await _auth.signOut(); // Garante que o signOut do Firebase seja tentado
       } catch (firebaseSignOutError, firebaseStackTrace) {
-        _logger.e('Erro crítico ao tentar Firebase signOut após falha de provedor social.', error: firebaseSignOutError, stackTrace: firebaseStackTrace);
-        throw _handleAuthError(firebaseSignOutError); // Relança o erro do Firebase se este também falhar
+        _logger.e(
+            'Erro crítico ao tentar Firebase signOut após falha de provedor social.',
+            error: firebaseSignOutError,
+            stackTrace: firebaseStackTrace);
+        throw _handleAuthError(
+            firebaseSignOutError); // Relança o erro do Firebase se este também falhar
       }
       // Não relançar o erro original do provedor social se o signOut do Firebase for bem-sucedido
     }
@@ -125,7 +138,8 @@ class AuthService {
       if (currentUser == null) return false;
       return await _userRepository.isUserAdmin(currentUser!.uid);
     } catch (e, stackTrace) {
-      _logger.e('Erro ao verificar se usuário é admin', error: e, stackTrace: stackTrace);
+      _logger.e('Erro ao verificar se usuário é admin',
+          error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -154,7 +168,8 @@ class AuthService {
             await _userRepository.getUserById(userCredential.user!.uid);
 
         if (userModel == null) {
-          _logger.i('Criando novo usuário no Firestore para login com Google: ${userCredential.user!.uid}');
+          _logger.i(
+              'Criando novo usuário no Firestore para login com Google: ${userCredential.user!.uid}');
           userModel = UserModel(
             id: userCredential.user!.uid,
             email: userCredential.user!.email!,
@@ -199,11 +214,14 @@ class AuthService {
               await _userRepository.getUserById(userCredential.user!.uid);
 
           if (userModel == null) {
-            _logger.i('Criando novo usuário no Firestore para login com Facebook: ${userCredential.user!.uid}');
+            _logger.i(
+                'Criando novo usuário no Firestore para login com Facebook: ${userCredential.user!.uid}');
             userModel = UserModel(
               id: userCredential.user!.uid,
               email: userData['email'] ?? userCredential.user!.email!,
-              name: userData['name'] ?? userCredential.user!.displayName ?? 'Usuário Facebook',
+              name: userData['name'] ??
+                  userCredential.user!.displayName ??
+                  'Usuário Facebook',
               phone: userCredential.user!.phoneNumber ?? '',
               createdAt: DateTime.now(),
               lastLoginAt: DateTime.now(),
@@ -217,7 +235,8 @@ class AuthService {
         _logger.w('Login com Facebook falhou: userCredential.user é nulo.');
         throw 'Erro ao fazer login com Facebook: Usuário do Firebase nulo.';
       } else {
-        _logger.w('Login com Facebook falhou: ${result.message} (Status: ${result.status})');
+        _logger.w(
+            'Login com Facebook falhou: ${result.message} (Status: ${result.status})');
         throw 'Login com Facebook falhou: ${result.message} (Status: ${result.status})';
       }
     } catch (e, stackTrace) {
@@ -233,7 +252,8 @@ class AuthService {
       try {
         await user.updateDisplayName(name);
       } catch (e, stackTrace) {
-        _logger.w('Erro ao atualizar displayName no Firebase Auth', error: e, stackTrace: stackTrace);
+        _logger.w('Erro ao atualizar displayName no Firebase Auth',
+            error: e, stackTrace: stackTrace);
       }
     }
   }
@@ -241,17 +261,19 @@ class AuthService {
   // Definir a persistência da autenticação
   Future<void> setAuthPersistence(bool rememberMe) async {
     try {
-      await _auth.setPersistence(rememberMe ? Persistence.LOCAL : Persistence.SESSION);
+      await _auth
+          .setPersistence(rememberMe ? Persistence.LOCAL : Persistence.SESSION);
     } catch (e, stackTrace) {
-      _logger.w('Erro ao definir persistência da autenticação', error: e, stackTrace: stackTrace);
+      _logger.w('Erro ao definir persistência da autenticação',
+          error: e, stackTrace: stackTrace);
     }
   }
-
 
   // Tratamento de erros de autenticação
   String _handleAuthError(dynamic e) {
     if (e is FirebaseAuthException) {
-      _logger.i('FirebaseAuthException: Code: ${e.code}, Message: ${e.message}');
+      _logger
+          .i('FirebaseAuthException: Code: ${e.code}, Message: ${e.message}');
       switch (e.code) {
         case 'user-not-found':
           return 'Usuário não encontrado. Verifique o e-mail digitado.';
@@ -276,14 +298,16 @@ class AuthService {
         case 'network-request-failed':
           return 'Falha na rede. Verifique sua conexão com a internet.';
         default:
-          _logger.w('FirebaseAuthException não tratada explicitamente: Code: ${e.code}, Message: ${e.message}');
+          _logger.w(
+              'FirebaseAuthException não tratada explicitamente: Code: ${e.code}, Message: ${e.message}');
           return 'Ocorreu um erro de autenticação. Tente novamente mais tarde.';
       }
     } else if (e is String) {
       _logger.i('Erro de autenticação (String): $e');
       return e;
     }
-    _logger.e('Erro de autenticação não identificado', error: e, stackTrace: (e is Error ? e.stackTrace : StackTrace.current));
+    _logger.e('Erro de autenticação não identificado',
+        error: e, stackTrace: (e is Error ? e.stackTrace : StackTrace.current));
     return 'Ocorreu um erro inesperado. Tente novamente.';
   }
 }

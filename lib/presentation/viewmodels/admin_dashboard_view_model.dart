@@ -1,4 +1,4 @@
-import 'package:get_it/get_it.dart';
+import '../../../core/di/injector.dart';
 import '../../data/models/indication_model.dart'; // Garante que IndicationStatus está acessível
 import '../../data/models/user_model.dart';
 import '../../data/repositories/indication_repository.dart';
@@ -18,10 +18,10 @@ class AdminDashboardViewModel extends BaseViewModel {
   Map<String, int> _indicationStats = {};
 
   AdminDashboardViewModel()
-      : _indicationRepository = GetIt.instance<IndicationRepository>(),
-        _userRepository = GetIt.instance<UserRepository>(),
-        _notificationService = GetIt.instance<NotificationService>(),
-        _eventBusService = GetIt.instance<EventBusService>();
+      : _indicationRepository = getIt<IndicationRepository>(),
+        _userRepository = getIt<UserRepository>(),
+        _notificationService = getIt<NotificationService>(),
+        _eventBusService = getIt<EventBusService>();
 
   List<IndicationModel> get allIndications => _allIndications;
   List<UserModel> get allUsers => _allUsers;
@@ -49,17 +49,26 @@ class AdminDashboardViewModel extends BaseViewModel {
   void _updateIndicationStats() {
     _indicationStats = {
       'total': _allIndications.length,
-      'pendente': _allIndications.where((i) => i.status == IndicationStatus.pending).length,
-      'contatado': _allIndications.where((i) => i.status == IndicationStatus.contacted).length,
-      'convertido': _allIndications.where((i) => i.status == IndicationStatus.converted).length,
-      'rejeitado': _allIndications.where((i) => i.status == IndicationStatus.rejected).length,
+      'pendente': _allIndications
+          .where((i) => i.status == IndicationStatus.pending)
+          .length,
+      'contatado': _allIndications
+          .where((i) => i.status == IndicationStatus.contacted)
+          .length,
+      'convertido': _allIndications
+          .where((i) => i.status == IndicationStatus.converted)
+          .length,
+      'rejeitado': _allIndications
+          .where((i) => i.status == IndicationStatus.rejected)
+          .length,
     };
   }
 
   IndicationStatus _stringToIndicationStatus(String status) {
     return IndicationStatus.values.firstWhere(
       (e) => e.toString().split('.').last == status.toLowerCase(),
-      orElse: () => IndicationStatus.pending, // Valor padrão em caso de não correspondência
+      orElse: () => IndicationStatus
+          .pending, // Valor padrão em caso de não correspondência
     );
   }
 
@@ -70,8 +79,8 @@ class AdminDashboardViewModel extends BaseViewModel {
       await _indicationRepository.updateIndicationStatus(
           indicationId, statusEnum);
       await loadDashboardData();
-      _eventBusService
-          .emit(IndicationStatusUpdatedEvent(indicationId, newStatus)); // EventBus pode continuar com string se necessário
+      _eventBusService.emit(IndicationStatusUpdatedEvent(indicationId,
+          newStatus)); // EventBus pode continuar com string se necessário
       _notificationService
           .showSuccess('Status da indicação atualizado com sucesso!');
     });
@@ -79,7 +88,9 @@ class AdminDashboardViewModel extends BaseViewModel {
 
   List<IndicationModel> filterIndicationsByStatus(String status) {
     return _allIndications
-        .where((indication) => indication.status.toString().split('.').last == status.toLowerCase())
+        .where((indication) =>
+            indication.status.toString().split('.').last ==
+            status.toLowerCase())
         .toList();
   }
 
@@ -106,8 +117,9 @@ class AdminDashboardViewModel extends BaseViewModel {
   Map<String, dynamic> getUserPerformanceStats(String userId) {
     final userIndications =
         _allIndications.where((i) => i.userId == userId).toList();
-    final convertedIndications =
-        userIndications.where((i) => i.status == IndicationStatus.converted).length;
+    final convertedIndications = userIndications
+        .where((i) => i.status == IndicationStatus.converted)
+        .length;
 
     return {
       'totalIndications': userIndications.length,

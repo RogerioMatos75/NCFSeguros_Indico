@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Simula um delay para mostrar a tela de splash.
     // O redirecionamento real será tratado pelo GoRouter com base no estado de autenticação.
     await Future.delayed(const Duration(seconds: 2));
-    
+
     // Após o delay, o GoRouter já deverá ter feito o redirecionamento necessário
     // com base na lógica em app_router.dart. Nenhuma navegação explícita é necessária aqui.
     // Se o usuário não estiver autenticado, será redirecionado para /login.
@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo.png',
+              'assets/Logo_NCF.png', // Corrigido para o nome correto do arquivo
               width: 200,
               height: 200,
             ),
